@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Cargar notas guardadas al abrir la app
         cargarNotas();
     }
 
