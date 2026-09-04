@@ -1,4 +1,4 @@
-# App en Java 
+# App de Notas en Java 
 
 Aplicación móvil desarrollada en **Android (Java)** que se conecta a una API REST desplegada en **Render** con persistencia de datos en **PostgreSQL**.
 
@@ -10,13 +10,12 @@ Aplicación móvil desarrollada en **Android (Java)** que se conecta a una API R
 
 ## Tecnologías Utilizadas
 * **Lenguaje:** Java
-* **IDE:** Android Studio
 * **Librerías principales:**
   * [Retrofit 2](https://square.github.io/retrofit/) - Cliente HTTP para Android.
   * [Gson Converter](https://github.com/google/gson) - Conversión automática de JSON a objetos Java.
 * **Backend compatible:** Node.js / Express con PostgreSQL en Render.
 
-## Requisitos e Instalación
+## Instalación
 1. Clonar el repositorio:
    ```bash
    git clone [https://github.com/EmmaPena/Android.git](https://github.com/EmmaPena/Android.git)
