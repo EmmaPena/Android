@@ -15,7 +15,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    // URL pública de tu API desplegada en Render (con / al final)
     private static final String URL_TUNEL = "https://mis-notas-api.onrender.com/";
 
     private EditText etNota;
@@ -31,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
         tvResultado = findViewById(R.id.tvResultado);
         Button btnEnviar = findViewById(R.id.btnEnviar);
 
-        // Inicializar Retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(URL_TUNEL)
                 .addConverterFactory(GsonConverterFactory.create())
