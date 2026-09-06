@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
             String texto = etNota.getText().toString().trim();
             if (!texto.isEmpty()) {
                 guardarNotaEnLaptop(texto);
+            } else {
+                Toast.makeText(MainActivity.this, getString(R.string.err_campo_vacio), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -53,17 +55,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Nota> call, Response<Nota> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(MainActivity.this, "¡Nota guardada!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.msg_exito), Toast.LENGTH_SHORT).show();
                     etNota.setText("");
                     cargarNotas();
                 } else {
-                    tvResultado.setText("Error HTTP: " + response.code());
+                    tvResultado.setText(getString(R.string.err_http) + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<Nota> call, Throwable t) {
-                tvResultado.setText("Error al conectar: " + t.getMessage());
+                tvResultado.setText(getString(R.string.err_conexion) + t.getMessage());
             }
         });
     }
@@ -73,19 +75,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Nota>> call, Response<List<Nota>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    StringBuilder builder = new StringBuilder("NOTAS GUARDADAS:\n\n");
+                    StringBuilder builder = new StringBuilder(getString(R.string.title_notas) + "\n\n");
                     for (Nota n : response.body()) {
                         builder.append("• ").append(n.getTexto()).append("\n");
                     }
                     tvResultado.setText(builder.toString());
                 } else {
-                    tvResultado.setText("Error al cargar: " + response.code());
+                    tvResultado.setText(getString(R.string.err_http) + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Nota>> call, Throwable t) {
-                tvResultado.setText("Error de conexión: " + t.getMessage());
+                tvResultado.setText(getString(R.string.err_conexion) + t.getMessage());
             }
         });
     }

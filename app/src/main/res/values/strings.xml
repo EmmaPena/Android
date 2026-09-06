@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">ServidorCaseroApp</string>
+    <string name="app_name">App Notas</string>
+    <string name="hint_nota">Nota</string>
+    <string name="btn_enviar">Guardar</string>
+    <string name="title_notas">Notas Guardadas</string>
+    <string name="msg_exito">Nota guardada</string>
+    <string name="err_campo_vacio">Por favor escribe una nota</string>
+    <string name="err_conexion">Error de conexión: </string>
+    <string name="err_http">Error HTTP: </string>
 </resources>

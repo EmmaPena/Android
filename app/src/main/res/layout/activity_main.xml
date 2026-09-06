@@ -9,14 +9,14 @@
         android:id="@+id/etNota"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Note" />
+        android:hint="@string/hint_nota" />
 
     <Button
         android:id="@+id/btnEnviar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Guardar" />
+        android:text="@string/btn_enviar" />
 
     <TextView
         android:id="@+id/tvResultado"

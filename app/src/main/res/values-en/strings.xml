@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">App Notes</string>
+    <string name="hint_nota">Note</string>
+    <string name="btn_enviar">Save</string>
+    <string name="title_notas">Saved Notes:</string>
+    <string name="msg_exito">Note saved</string>
+    <string name="err_campo_vacio">Please enter a note</string>
+    <string name="err_conexion">Connection error: </string>
+    <string name="err_http">HTTP Error: </string>
+</resources>
