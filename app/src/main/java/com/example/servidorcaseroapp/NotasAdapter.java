@@ -18,6 +18,10 @@ public class NotasAdapter extends RecyclerView.Adapter<NotasAdapter.NotaViewHold
         notifyDataSetChanged();
     }
 
+    public Nota getNotaEn(int position) {
+        return listaNotas.get(position);
+    }
+
     @NonNull
     @Override
     public NotaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

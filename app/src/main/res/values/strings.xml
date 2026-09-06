@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">App Notas</string>
+    <string name="app_name">Notas</string>
     <string name="hint_nota">Nota</string>
     <string name="btn_enviar">Guardar</string>
     <string name="title_notas">Notas Guardadas</string>

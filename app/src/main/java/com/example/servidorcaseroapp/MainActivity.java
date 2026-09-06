@@ -1,10 +1,14 @@
 package com.example.servidorcaseroapp;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
@@ -17,10 +21,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private static final String URL_TUNEL = "https://mis-notas-api.onrender.com/";
+    private static final long INTERVALO_POLLING = 3000; // Refresca cada 3 segundos
 
     private EditText etNota;
     private ApiService apiService;
     private NotasAdapter adapter;
+
+    // Handler para ejecutar las peticiones periódicas
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Runnable pollRunnable = new Runnable() {
+        @Override
+        public void run() {
+            cargarNotas();
+            handler.postDelayed(this, INTERVALO_POLLING);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
         Button btnEnviar = findViewById(R.id.btnEnviar);
         RecyclerView rvNotas = findViewById(R.id.rvNotas);
 
-        // Configuración del RecyclerView
         rvNotas.setLayoutManager(new LinearLayoutManager(this));
         adapter = new NotasAdapter();
         rvNotas.setAdapter(adapter);
@@ -52,7 +66,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        cargarNotas();
+        // Configuración de Swipe-to-Delete
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                Nota notaABorrar = adapter.getNotaEn(position);
+                eliminarNotaDelBackend(notaABorrar.getId());
+            }
+        }).attachToRecyclerView(rvNotas);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Inicia las peticiones periódicas cuando la app entra en primer plano
+        handler.post(pollRunnable);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Detiene las peticiones periódicas al salir o pausar la app para no consumir batería/recursos
+        handler.removeCallbacks(pollRunnable);
     }
 
     private void guardarNotaEnLaptop(String texto) {
@@ -82,14 +123,33 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<List<Nota>> call, Response<List<Nota>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     adapter.setNotas(response.body());
-                } else {
-                    Toast.makeText(MainActivity.this, getString(R.string.err_http) + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Nota>> call, Throwable t) {
+                // Silencioso en onFailure durante el polling para no saturar con Toasts en fallos temporales
+            }
+        });
+    }
+
+    private void eliminarNotaDelBackend(int id) {
+        apiService.eliminarNota(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(MainActivity.this, "Nota eliminada", Toast.LENGTH_SHORT).show();
+                    cargarNotas();
+                } else {
+                    Toast.makeText(MainActivity.this, getString(R.string.err_http) + response.code(), Toast.LENGTH_SHORT).show();
+                    cargarNotas();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
                 Toast.makeText(MainActivity.this, getString(R.string.err_conexion) + t.getMessage(), Toast.LENGTH_SHORT).show();
+                cargarNotas();
             }
         });
     }

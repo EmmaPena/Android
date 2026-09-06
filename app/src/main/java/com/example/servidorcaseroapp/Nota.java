@@ -8,6 +8,11 @@ public class Nota {
         this.texto = texto;
     }
 
-    public int getId() { return id; }
-    public String getTexto() { return texto; }
+    public int getId() {
+        return id;
+    }
+
+    public String getTexto() {
+        return texto;
+    }
 }
