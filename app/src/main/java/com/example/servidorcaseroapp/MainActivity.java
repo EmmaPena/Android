@@ -3,9 +3,10 @@ package com.example.servidorcaseroapp;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,8 +19,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String URL_TUNEL = "https://mis-notas-api.onrender.com/";
 
     private EditText etNota;
-    private TextView tvResultado;
     private ApiService apiService;
+    private NotasAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +28,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         etNota = findViewById(R.id.etNota);
-        tvResultado = findViewById(R.id.tvResultado);
         Button btnEnviar = findViewById(R.id.btnEnviar);
+        RecyclerView rvNotas = findViewById(R.id.rvNotas);
+
+        // Configuración del RecyclerView
+        rvNotas.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new NotasAdapter();
+        rvNotas.setAdapter(adapter);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(URL_TUNEL)
@@ -59,13 +65,13 @@ public class MainActivity extends AppCompatActivity {
                     etNota.setText("");
                     cargarNotas();
                 } else {
-                    tvResultado.setText(getString(R.string.err_http) + response.code());
+                    Toast.makeText(MainActivity.this, getString(R.string.err_http) + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Nota> call, Throwable t) {
-                tvResultado.setText(getString(R.string.err_conexion) + t.getMessage());
+                Toast.makeText(MainActivity.this, getString(R.string.err_conexion) + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -75,19 +81,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Nota>> call, Response<List<Nota>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    StringBuilder builder = new StringBuilder(getString(R.string.title_notas) + "\n\n");
-                    for (Nota n : response.body()) {
-                        builder.append("• ").append(n.getTexto()).append("\n");
-                    }
-                    tvResultado.setText(builder.toString());
+                    adapter.setNotas(response.body());
                 } else {
-                    tvResultado.setText(getString(R.string.err_http) + response.code());
+                    Toast.makeText(MainActivity.this, getString(R.string.err_http) + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Nota>> call, Throwable t) {
-                tvResultado.setText(getString(R.string.err_conexion) + t.getMessage());
+                Toast.makeText(MainActivity.this, getString(R.string.err_conexion) + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
