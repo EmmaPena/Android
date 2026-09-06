@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-09-06T23:15:49.773081800Z">
+        <DropdownSelection timestamp="2026-09-06T23:37:46.351426700Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\pena0\.android\avd\Motorola_Edge_60_Fusion.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=ZY32JB9WXG" />
             </handle>
           </Target>
         </DropdownSelection>

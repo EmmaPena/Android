@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,18 +22,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private static final String URL_TUNEL = "https://mis-notas-api.onrender.com/";
-    private static final long INTERVALO_POLLING = 3000; // Refresca cada 3 segundos
+    private static final long INTERVALO_POLLING = 3000;
 
     private EditText etNota;
+    private SearchView svBuscar;
     private ApiService apiService;
     private NotasAdapter adapter;
 
-    // Handler para ejecutar las peticiones periódicas
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable pollRunnable = new Runnable() {
         @Override
         public void run() {
-            cargarNotas();
+            // Solo hace polling si el usuario no está buscando activamente
+            if (svBuscar != null && svBuscar.getQuery().toString().isEmpty()) {
+                cargarNotas();
+            }
             handler.postDelayed(this, INTERVALO_POLLING);
         }
     };
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         etNota = findViewById(R.id.etNota);
+        svBuscar = findViewById(R.id.svBuscar);
         Button btnEnviar = findViewById(R.id.btnEnviar);
         RecyclerView rvNotas = findViewById(R.id.rvNotas);
 
@@ -66,7 +71,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Configuración de Swipe-to-Delete
+        // Evento de búsqueda en tiempo real
+        svBuscar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.filtrar(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.filtrar(newText);
+                return false;
+            }
+        });
+
+        // Configuración Swipe-to-Delete
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -85,14 +105,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Inicia las peticiones periódicas cuando la app entra en primer plano
         handler.post(pollRunnable);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Detiene las peticiones periódicas al salir o pausar la app para no consumir batería/recursos
         handler.removeCallbacks(pollRunnable);
     }
 
@@ -128,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Nota>> call, Throwable t) {
-                // Silencioso en onFailure durante el polling para no saturar con Toasts en fallos temporales
             }
         });
     }

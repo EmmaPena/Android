@@ -12,9 +12,28 @@ import java.util.List;
 public class NotasAdapter extends RecyclerView.Adapter<NotasAdapter.NotaViewHolder> {
 
     private List<Nota> listaNotas = new ArrayList<>();
+    private List<Nota> listaNotasOriginal = new ArrayList<>();
 
     public void setNotas(List<Nota> nuevasNotas) {
-        this.listaNotas = nuevasNotas;
+        this.listaNotas = new ArrayList<>(nuevasNotas);
+        this.listaNotasOriginal = new ArrayList<>(nuevasNotas);
+        notifyDataSetChanged();
+    }
+
+    public void filtrar(String texto) {
+        if (texto.isEmpty()) {
+            listaNotas.clear();
+            listaNotas.addAll(listaNotasOriginal);
+        } else {
+            List<Nota> filtradas = new ArrayList<>();
+            for (Nota n : listaNotasOriginal) {
+                if (n.getTexto().toLowerCase().contains(texto.toLowerCase())) {
+                    filtradas.add(n);
+                }
+            }
+            listaNotas.clear();
+            listaNotas.addAll(filtradas);
+        }
         notifyDataSetChanged();
     }
 
