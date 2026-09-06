@@ -9,7 +9,7 @@
         android:id="@+id/etNota"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Escrobe una Nota..." />
+        android:hint="Note" />
 
     <Button
         android:id="@+id/btnEnviar"
